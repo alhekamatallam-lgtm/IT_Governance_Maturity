@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تقييم نضج حوكمة تقنية المعلومات I&T</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+      
+      body {
+        font-family: 'Cairo', sans-serif !important;
+        background-color: #F7F6F2 !important;
+        color: #1D1D1B !important;
+      }
+
+      /* ===== Custom Brand CSS ===== */
+      
+      /* Buttons */
+      .btn-primary {
+          background-color: #E0B703 !important;
+          border-color: #E0B703 !important;
+          color: #1D1D1B !important;
+      }
+      .btn-primary:hover {
+          background-color: #AB974A !important;
+          border-color: #AB974A !important;
+      }
+      .btn-secondary {
+          background-color: #1D1D1B !important;
+          border-color: #1D1D1B !important;
+          color: #FFFFFF !important;
+      }
+      
+      /* Inputs */
+      .form-control:focus {
+          border-color: #E0B703 !important;
+          box-shadow: 0 0 0 0.2rem rgba(224, 183, 3, 0.25) !important;
+      }
+
+      /* Links */
+      a { color: #E0B703 !important; }
+      a:hover { color: #AB974A !important; }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      
+      /* Pattern for charts */
+      .pattern-diagonal-lines {
+        background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.5) 5px, rgba(255,255,255,0.5) 10px);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "recharts": "https://aistudiocdn.com/recharts@^3.2.1",
+    "jspdf": "https://aistudiocdn.com/jspdf@^2.5.1",
+    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1"
+  }
+}
+</script>
+</head>
+  <body class="bg-[#F7F6F2] text-[#1D1D1B]">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

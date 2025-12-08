@@ -1,0 +1,5 @@
+{
+  "name": "IT_Governance_Maturity",
+  "description": "An interactive web application to assess the maturity level of a Data Governance program based on COBIT Foundation 2019 standards. Users can rate their program across 11 key domains and visualize the results in a radar chart.",
+  "requestFramePermissions": []
+}
