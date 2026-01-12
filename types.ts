@@ -2,8 +2,16 @@ export interface Question {
   text: string;
 }
 
+export interface MaturityGuidance {
+  level: number;
+  statement: string;
+}
+
 export interface Criterion {
   text: string;
+  assessmentFocus?: string;
+  referenceLevel?: number;
+  formalStatement?: string;
 }
 
 export interface Section {
@@ -21,7 +29,7 @@ export interface Domain {
 
 export interface MaturityLevel {
   level: number;
-  title: string;
+  title:string;
   description: string;
 }
 

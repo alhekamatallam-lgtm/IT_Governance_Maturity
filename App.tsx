@@ -48,18 +48,24 @@ const App: React.FC = () => {
            });
         }
 
-        // 2. Process Criteria into sections for display purposes
+        // 2. Process Criteria (including Evidence & Guidance) from "Criteria" sheet
         if (data.Criteria && Array.isArray(data.Criteria)) {
             const criteriaByDomain = data.Criteria.reduce((acc: any, row: any) => {
               const domainTitleEN = row.Domain_EN;
               const sectionTitle = row.Section_AR;
-              const criterionText = row.Criterion_AR;
+              
+              if (!domainTitleEN || !sectionTitle || !row.Criterion_AR) return acc;
 
-              if (!domainTitleEN || !sectionTitle || !criterionText) return acc;
+              const criterion = {
+                text: row.Criterion_AR,
+                assessmentFocus: row.Assessment_Focus,
+                referenceLevel: row.Level,
+                formalStatement: row.Formal_Statement,
+              };
 
               if (!acc[domainTitleEN]) acc[domainTitleEN] = {};
               if (!acc[domainTitleEN][sectionTitle]) acc[domainTitleEN][sectionTitle] = [];
-              acc[domainTitleEN][sectionTitle].push({ text: criterionText });
+              acc[domainTitleEN][sectionTitle].push(criterion);
               return acc;
             }, {});
 

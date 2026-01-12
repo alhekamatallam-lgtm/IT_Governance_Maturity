@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import type { Domain, Section } from '../types';
+import React, { useState, useEffect } from 'react';
+import type { Domain, Section, Criterion } from '../types';
+import { MATURITY_LEVELS } from '../constants';
+
 
 interface DomainOverviewProps {
   domains: Domain[];
@@ -8,10 +10,84 @@ interface DomainOverviewProps {
 }
 
 const Icons = {
-  Governance: () => <svg className="w-10 h-10 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>,
+  Governance: () => <svg className="w-10 h-10 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00-586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>,
   Strategy: () => <svg className="w-10 h-10 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
   Framework: () => <svg className="w-10 h-10 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>,
   Maturity: () => <svg className="w-10 h-10 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+};
+
+const CriterionGuidance: React.FC<{ criterion: Criterion }> = ({ criterion }) => {
+  const levelInfo = MATURITY_LEVELS.find(l => l.level === criterion.referenceLevel);
+
+  return (
+    <div className="mt-4 w-full pr-5 pl-2">
+      <div className="bg-[#F7F6F2] rounded-xl border border-[#EEECE7] p-5 space-y-4 shadow-inner">
+        
+        {criterion.assessmentFocus && (
+          <div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <h5 className="font-bold text-sm text-[#1D1D1B]">محور التقييم (كيف يُقيّم)</h5>
+            </div>
+            <p className="mt-2 text-sm text-[#1D1D1B]/80 leading-relaxed pr-7">{criterion.assessmentFocus}</p>
+          </div>
+        )}
+
+        {criterion.referenceLevel !== undefined && levelInfo && (
+           <div className="bg-white p-4 rounded-lg border border-gray-200">
+             <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <h5 className="font-bold text-sm text-[#1D1D1B]">مستوى النضج المرجعي</h5>
+            </div>
+             <div className="flex items-baseline gap-4 mt-2 pr-7">
+                <span className="font-extrabold text-4xl text-[#1D1D1B]">{criterion.referenceLevel}</span>
+                <span className="font-bold text-sm text-[#1D1D1B]/70">{levelInfo.title}</span>
+             </div>
+           </div>
+        )}
+        
+        {criterion.formalStatement && (
+          <div>
+            <div className="flex items-center gap-2">
+               <svg className="w-5 h-5 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              <h5 className="font-bold text-sm text-[#1D1D1B]">التفسير الرسمي (لماذا يعتبر ناضجاً)</h5>
+            </div>
+            <p className="mt-2 text-sm text-[#1D1D1B]/80 leading-relaxed bg-white p-3 rounded-md border border-gray-200 pr-4">{criterion.formalStatement}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const CriterionItem: React.FC<{ criterion: Criterion }> = ({ criterion }) => {
+  const [showGuidance, setShowGuidance] = useState(false);
+  const hasGuidance = criterion.assessmentFocus || criterion.referenceLevel !== undefined || criterion.formalStatement;
+
+  return (
+    <li className="flex flex-col items-start gap-2 text-[#1D1D1B]/80 text-sm py-2 border-b border-gray-100 last:border-0">
+      <div className="w-full flex justify-between items-start">
+        <div className="flex items-start gap-2">
+          <span className="text-[#E0B703] mt-1">•</span>
+          <span>{criterion.text}</span>
+        </div>
+        {hasGuidance && (
+          <button 
+            onClick={() => setShowGuidance(!showGuidance)}
+            className="flex-shrink-0 text-xs flex items-center gap-1 text-[#1D1D1B]/60 hover:text-[#E0B703] font-bold"
+          >
+            {showGuidance ? 'إخفاء الأدلة' : 'عرض الأدلة'}
+            <svg className={`w-3 h-3 transition-transform ${showGuidance ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          </button>
+        )}
+      </div>
+      {hasGuidance && showGuidance && (
+         <div className="w-full pt-2 animate-fade-in">
+            <CriterionGuidance criterion={criterion} />
+         </div>
+      )}
+    </li>
+  );
 };
 
 const SectionAccordion: React.FC<{ section: Section }> = ({ section }) => {
@@ -33,12 +109,9 @@ const SectionAccordion: React.FC<{ section: Section }> = ({ section }) => {
       </button>
       {isOpen && (
         <div className="p-4 border-t border-[#EEECE7]">
-          <ul className="space-y-2">
+          <ul className="space-y-0">
             {section.criteria.map((criterion, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-[#1D1D1B]/80 text-sm">
-                <span className="text-[#E0B703] mt-1">•</span>
-                <span>{criterion.text}</span>
-              </li>
+              <CriterionItem key={idx} criterion={criterion} />
             ))}
           </ul>
         </div>
@@ -49,6 +122,17 @@ const SectionAccordion: React.FC<{ section: Section }> = ({ section }) => {
 
 const DomainOverview: React.FC<DomainOverviewProps> = ({ domains, onStart, onViewStats }) => {
   const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
+
+  useEffect(() => {
+    if (selectedDomain) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { // Cleanup function
+      document.body.style.overflow = '';
+    };
+  }, [selectedDomain]);
 
   const handleOpenDetails = (domain: Domain) => setSelectedDomain(domain);
   const handleCloseDetails = () => setSelectedDomain(null);
@@ -98,7 +182,7 @@ const DomainOverview: React.FC<DomainOverviewProps> = ({ domains, onStart, onVie
                return (
                <div key={domain.id} className="group relative bg-white rounded-2xl shadow-sm border border-[#EEECE7] hover:shadow-2xl hover:border-[#E0B703] transition-all duration-300 hover:-translate-y-2 overflow-hidden flex flex-col">
                   <div className="bg-[#1D1D1B] p-5 relative overflow-hidden group-hover:bg-gradient-to-r from-[#E0B703] to-[#c7a302] transition-all duration-300">
-                     <div className="absolute -left-2 -top-6 text-8xl font-bold text-white/5 group-hover:text-[#1D1D1B]/10 transition-colors duration-300 select-none pointer-events-none">{idx + 1}</div>
+                     <div className="absolute left-2 -top-6 text-8xl font-bold text-white/5 group-hover:text-[#1D1D1B]/10 transition-colors duration-300 select-none pointer-events-none">{idx + 1}</div>
                      <h3 className="text-lg md:text-xl font-bold text-white group-hover:text-[#1D1D1B] transition-colors relative z-10">{arabicTitle}</h3>
                      <p className="text-sm font-mono text-white/40 group-hover:text-[#1D1D1B]/60 transition-colors relative z-10">{englishTitle}</p>
                   </div>
@@ -117,9 +201,9 @@ const DomainOverview: React.FC<DomainOverviewProps> = ({ domains, onStart, onVie
       <div className="text-center pt-8"><button onClick={onStart} className="px-12 py-5 bg-[#1D1D1B] text-white font-bold text-xl rounded-full shadow-2xl hover:bg-[#333] hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 mx-auto ring-4 ring-[#E0B703]/20"><span>ابدأ رحلة التقييم</span><svg className="w-6 h-6 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></button></div>
 
       {selectedDomain && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={handleCloseDetails}>
-           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
-              <div className="bg-[#1D1D1B] p-6 flex justify-between items-center sticky top-0 z-10"><h3 className="text-xl font-bold text-[#E0B703]">{selectedDomain.title}</h3><button onClick={handleCloseDetails} className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-[#E0B703] hover:text-[#1D1D1B] transition-colors"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button></div>
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={handleCloseDetails}>
+           <div className="bg-white rounded-t-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col animate-slide-up" onClick={e => e.stopPropagation()}>
+              <div className="bg-[#1D1D1B] p-6 flex justify-between items-center flex-shrink-0 rounded-t-xl"><h3 className="text-xl font-bold text-[#E0B703]">{selectedDomain.title}</h3><button onClick={handleCloseDetails} className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-[#E0B703] hover:text-[#1D1D1B] transition-colors"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button></div>
               <div className="p-6 overflow-y-auto">
                   <div className="mb-6 bg-[#F7F6F2] p-4 rounded-lg border border-[#EEECE7]"><h4 className="font-bold text-[#1D1D1B] mb-2 text-sm">التعريف:</h4><p className="text-[#1D1D1B]/70 text-sm leading-relaxed">{selectedDomain.description}</p></div>
                   <h4 className="font-bold text-[#1D1D1B] mb-4 flex items-center gap-2 border-b border-[#EEECE7] pb-2"><span className="w-2 h-6 bg-[#E0B703] rounded-full"></span>المعايير التفصيلية</h4>
@@ -127,7 +211,7 @@ const DomainOverview: React.FC<DomainOverviewProps> = ({ domains, onStart, onVie
                     {selectedDomain.sections.map((section, idx) => <SectionAccordion key={idx} section={section} />)}
                   </div>
               </div>
-              <div className="p-4 border-t border-[#EEECE7] bg-[#F7F6F2] text-center"><button onClick={() => { handleCloseDetails(); onStart(); }} className="px-8 py-2.5 bg-[#E0B703] text-[#1D1D1B] font-bold rounded-lg shadow hover:bg-[#c7a302] transition-colors">ابدأ التقييم الآن</button></div>
+              <div className="p-4 border-t border-[#EEECE7] bg-[#F7F6F2] text-center flex-shrink-0"><button onClick={() => { handleCloseDetails(); onStart(); }} className="px-8 py-2.5 bg-[#E0B703] text-[#1D1D1B] font-bold rounded-lg shadow hover:bg-[#c7a302] transition-colors">ابدأ التقييم الآن</button></div>
            </div>
         </div>
       )}
