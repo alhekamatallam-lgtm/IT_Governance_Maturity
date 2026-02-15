@@ -1,3 +1,4 @@
+
 export interface Question {
   text: string;
 }
@@ -12,6 +13,7 @@ export interface Criterion {
   assessmentFocus?: string;
   referenceLevel?: number;
   formalStatement?: string;
+  improvementOpportunities?: string;
 }
 
 export interface Section {

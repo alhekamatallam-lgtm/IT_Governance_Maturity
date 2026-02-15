@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { ASSESSMENT_DOMAINS, MATURITY_LEVELS } from './constants';
 import type { Result, EvaluatorInfo, GlobalStatsData, Domain, Question } from './types';
@@ -61,6 +62,7 @@ const App: React.FC = () => {
                 assessmentFocus: row.Assessment_Focus,
                 referenceLevel: row.Level,
                 formalStatement: row.Formal_Statement,
+                improvementOpportunities: row.Improvement_Opportunities,
               };
 
               if (!acc[domainTitleEN]) acc[domainTitleEN] = {};

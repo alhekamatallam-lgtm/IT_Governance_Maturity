@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import type { Domain, Section, Criterion } from '../types';
 import { MATURITY_LEVELS } from '../constants';
@@ -55,6 +56,16 @@ const CriterionGuidance: React.FC<{ criterion: Criterion }> = ({ criterion }) =>
             <p className="mt-2 text-sm text-[#1D1D1B]/80 leading-relaxed bg-white p-3 rounded-md border border-gray-200 pr-4">{criterion.formalStatement}</p>
           </div>
         )}
+
+        {criterion.improvementOpportunities && (
+          <div>
+            <div className="flex items-center gap-2">
+               <svg className="w-5 h-5 text-[#E0B703]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+              <h5 className="font-bold text-sm text-[#1D1D1B]">فرص التحسين (ماذا نفعل؟)</h5>
+            </div>
+            <p className="mt-2 text-sm text-[#1D1D1B]/80 leading-relaxed bg-white p-3 rounded-md border border-gray-200 pr-4">{criterion.improvementOpportunities}</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -62,7 +73,7 @@ const CriterionGuidance: React.FC<{ criterion: Criterion }> = ({ criterion }) =>
 
 const CriterionItem: React.FC<{ criterion: Criterion }> = ({ criterion }) => {
   const [showGuidance, setShowGuidance] = useState(false);
-  const hasGuidance = criterion.assessmentFocus || criterion.referenceLevel !== undefined || criterion.formalStatement;
+  const hasGuidance = criterion.assessmentFocus || criterion.referenceLevel !== undefined || criterion.formalStatement || criterion.improvementOpportunities;
 
   return (
     <li className="flex flex-col items-start gap-2 text-[#1D1D1B]/80 text-sm py-2 border-b border-gray-100 last:border-0">
