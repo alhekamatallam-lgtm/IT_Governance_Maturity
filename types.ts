@@ -14,6 +14,7 @@ export interface Criterion {
   referenceLevel?: number;
   formalStatement?: string;
   improvementOpportunities?: string;
+  relatedQuestion?: string;
 }
 
 export interface Section {

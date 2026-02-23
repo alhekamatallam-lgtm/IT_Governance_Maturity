@@ -12,8 +12,20 @@ interface ResultsChartProps {
 }
 
 const RADIAN = Math.PI / 180;
-const CustomizedAxisTick = (props: any) => {
-  const { x, y, payload, cx, cy, outerRadius } = props;
+interface CustomizedAxisTickProps {
+  x: number;
+  y: number;
+  payload: {
+    value: string;
+  };
+  cx: number;
+  cy: number;
+  outerRadius: number;
+  angle: number;
+}
+
+const CustomizedAxisTick: React.FC<CustomizedAxisTickProps> = (props) => {
+  const { payload, cx, cy, outerRadius } = props;
   const angle = props.angle;
 
   const radius = 40; // Increased radius to prevent label overlap

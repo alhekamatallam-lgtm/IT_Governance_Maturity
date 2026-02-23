@@ -61,7 +61,7 @@ const AnalysisReport: React.FC<AnalysisReportProps> = ({ results, overallScore, 
       <div>
          <h3 className="text-xl font-bold text-[#1D1D1B] mb-3 border-r-4 border-[#E0B703] pr-3">تحليل الوضع الحالي</h3>
          <p className="text-[#1D1D1B]/80 leading-relaxed text-lg">
-           بناءً على تقييمك، يبلغ متوسط نضج حوكمة تقنية المعلومات <span className="font-bold text-[#1D1D1B]">{overallScore.toFixed(2)}</span>، مما يضع منظمتك في مستوى <span className="font-bold text-[#1D1D1B]">"{overallMaturity}"</span>.
+           بناءً على تقييمك، يبلغ متوسط نضج حوكمة تقنية المعلومات <span className="font-bold text-[#1D1D1B]">{overallScore.toFixed(2)}</span>، مما يضع منظمتك في مستوى <span className="font-bold text-[#1D1D1B]">&quot;{overallMaturity}&quot;</span>.
          </p>
       </div>
 

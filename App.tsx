@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { ASSESSMENT_DOMAINS, MATURITY_LEVELS } from './constants';
-import type { Result, EvaluatorInfo, GlobalStatsData, Domain, Question } from './types';
+import type { Result, EvaluatorInfo, GlobalStatsData, Domain } from './types';
 import Questionnaire from './components/Questionnaire';
 import ResultsChart from './components/ResultsChart';
 import Header from './components/Header';
@@ -11,8 +11,9 @@ import ProgressTracker from './components/ProgressTracker';
 import DomainOverview from './components/DomainOverview';
 import EvaluatorForm from './components/EvaluatorForm';
 import GlobalStats from './components/GlobalStats';
+import DigitalTransformationMaturity from './components/DigitalTransformationMaturity';
 
-type AppStep = 'overview' | 'evaluator_info' | 'assessment' | 'results' | 'global_stats';
+type AppStep = 'overview' | 'evaluator_info' | 'assessment' | 'results' | 'global_stats' | 'digital_transformation_maturity';
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoNykshIGwPVMNQqwqiBjjnwoyfD7C1Iy4558HSZUVix2Xl9cFMnHwP_Yu7TEOBwKa/exec";
 
@@ -39,7 +40,7 @@ const App: React.FC = () => {
 
         // 1. Process definitions from "Overview" sheet
         if (data.Overview && Array.isArray(data.Overview)) {
-           data.Overview.forEach((item: any) => {
+           data.Overview.forEach((item: { [key: string]: string }) => {
              const domainName = item["نطاق التقييم"];
              const definition = item["التعريف"];
              const domain = newDomains.find((d: Domain) => d.id === domainName || d.title.includes(domainName));
@@ -51,7 +52,7 @@ const App: React.FC = () => {
 
         // 2. Process Criteria (including Evidence & Guidance) from "Criteria" sheet
         if (data.Criteria && Array.isArray(data.Criteria)) {
-            const criteriaByDomain = data.Criteria.reduce((acc: any, row: any) => {
+            const criteriaByDomain = data.Criteria.reduce((acc: Record<string, Record<string, string>[]>, row: Record<string, string>) => {
               const domainTitleEN = row.Domain_EN;
               const sectionTitle = row.Section_AR;
               
@@ -63,6 +64,7 @@ const App: React.FC = () => {
                 referenceLevel: row.Level,
                 formalStatement: row.Formal_Statement,
                 improvementOpportunities: row.Improvement_Opportunities,
+                relatedQuestion: row.Related_Question,
               };
 
               if (!acc[domainTitleEN]) acc[domainTitleEN] = {};
@@ -137,7 +139,7 @@ const App: React.FC = () => {
       domain.questions.forEach(question => {
           const score = answers[domain.id]?.[question.text] || 0;
           const levelObj = MATURITY_LEVELS.find(l => l.level === score);
-          let levelName = levelObj ? levelObj.title.match(/\((.*?)\)/)?.[1] || '' : '';
+          const levelName = levelObj ? levelObj.title.match(/\((.*?)\)/)?.[1] || '' : '';
           domainAnswers[question.text] = score > 0 ? `${levelName} (${score})` : "";
       });
 
@@ -304,6 +306,12 @@ const App: React.FC = () => {
     setCurrentStep(previousStep);
     window.scrollTo(0, 0);
   };
+
+  const handleViewMaturityReport = () => {
+    setPreviousStep(currentStep);
+    setCurrentStep('digital_transformation_maturity');
+    window.scrollTo(0, 0);
+  };
   
   const totalQuestions = useMemo(() => domains.reduce((acc, domain) => acc + domain.questions.length, 0), [domains]);
   const answeredQuestions = useMemo(() => Object.values(answers).reduce((acc: number, domainAnswers) => acc + Object.keys(domainAnswers).length, 0), [answers]);
@@ -365,6 +373,7 @@ const App: React.FC = () => {
              domains={domains} 
              onStart={handleStart} 
              onViewStats={handleViewGlobalStats}
+             onViewMaturityReport={handleViewMaturityReport}
           />
         )}
 
@@ -425,6 +434,17 @@ const App: React.FC = () => {
              onReset={handleReset} 
              onViewStats={handleViewGlobalStats}
           />
+        )}
+
+        {currentStep === 'digital_transformation_maturity' && (
+          <div className="animate-fade-in">
+            <DigitalTransformationMaturity />
+            <div className="text-center mt-8">
+              <button onClick={() => setCurrentStep(previousStep)} className="btn-secondary py-2 px-6 rounded-md shadow-sm hover:bg-gray-700 transition-colors">
+                العودة
+              </button>
+            </div>
+          </div>
         )}
 
       </main>

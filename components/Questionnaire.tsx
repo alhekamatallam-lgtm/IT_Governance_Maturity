@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Domain, Question } from '../types';
+import type { Domain } from '../types';
 
 interface QuestionnaireProps {
   domains: Domain[];
