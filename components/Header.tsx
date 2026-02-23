@@ -41,7 +41,7 @@ const Header: React.FC = () => {
           {/* Title Section (Left Side in RTL) */}
           <div className="text-center md:text-left flex-grow order-2 md:order-2 md:mr-8">
             <h1 className="text-2xl md:text-3xl font-extrabold text-[#1D1D1B] tracking-wide mb-1">
-              تقييم نضج حوكمة تقنية المعلومات I&T
+              رفع مستوى نضج التحول الرقمي وحوكمته
             </h1>
             <div className="flex items-center justify-center md:justify-end gap-2 text-[#1D1D1B]/70 text-sm md:text-base">
               <span>منظومة قياس الأداء الرقمي وفق معايير</span>
