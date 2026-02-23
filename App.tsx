@@ -27,82 +27,82 @@ const App: React.FC = () => {
   const [globalStats, setGlobalStats] = useState<GlobalStatsData | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState<boolean>(false);
   const [domains, setDomains] = useState<Domain[]>(ASSESSMENT_DOMAINS);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const [isFetchingData, setIsFetchingData] = useState<boolean>(false);
   const [previousStep, setPreviousStep] = useState<AppStep>('overview');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(GOOGLE_SCRIPT_URL);
-        const data = await response.json();
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(GOOGLE_SCRIPT_URL);
+  //       const data = await response.json();
         
-        const newDomains = JSON.parse(JSON.stringify(ASSESSMENT_DOMAINS));
+  //       const newDomains = JSON.parse(JSON.stringify(ASSESSMENT_DOMAINS));
 
-        // 1. Process definitions from "Overview" sheet
-        if (data.Overview && Array.isArray(data.Overview)) {
-           data.Overview.forEach((item: { [key: string]: string }) => {
-             const domainName = item["نطاق التقييم"];
-             const definition = item["التعريف"];
-             const domain = newDomains.find((d: Domain) => d.id === domainName || d.title.includes(domainName));
-             if (domain && definition) {
-                domain.description = definition;
-             }
-           });
-        }
+  //       // 1. Process definitions from "Overview" sheet
+  //       if (data.Overview && Array.isArray(data.Overview)) {
+  //          data.Overview.forEach((item: { [key: string]: string }) => {
+  //            const domainName = item["نطاق التقييم"];
+  //            const definition = item["التعريف"];
+  //            const domain = newDomains.find((d: Domain) => d.id === domainName || d.title.includes(domainName));
+  //            if (domain && definition) {
+  //               domain.description = definition;
+  //            }
+  //          });
+  //       }
 
-        // 2. Process Criteria (including Evidence & Guidance) from "Criteria" sheet
-        if (data.Criteria && Array.isArray(data.Criteria)) {
-            const criteriaByDomain = data.Criteria.reduce((acc: Record<string, Record<string, string>[]>, row: Record<string, string>) => {
-              const domainTitleEN = row.Domain_EN;
-              const sectionTitle = row.Section_AR;
+  //       // 2. Process Criteria (including Evidence & Guidance) from "Criteria" sheet
+  //       if (data.Criteria && Array.isArray(data.Criteria)) {
+  //           const criteriaByDomain = data.Criteria.reduce((acc: Record<string, Record<string, string>[]>, row: Record<string, string>) => {
+  //             const domainTitleEN = row.Domain_EN;
+  //             const sectionTitle = row.Section_AR;
               
-              if (!domainTitleEN || !sectionTitle || !row.Criterion_AR) return acc;
+  //             if (!domainTitleEN || !sectionTitle || !row.Criterion_AR) return acc;
 
-              const criterion = {
-                text: row.Criterion_AR,
-                assessmentFocus: row.Assessment_Focus,
-                referenceLevel: row.Level,
-                formalStatement: row.Formal_Statement,
-                improvementOpportunities: row.Improvement_Opportunities,
-                relatedQuestion: row.Related_Question,
-              };
+  //             const criterion = {
+  //               text: row.Criterion_AR,
+  //               assessmentFocus: row.Assessment_Focus,
+  //               referenceLevel: row.Level,
+  //               formalStatement: row.Formal_Statement,
+  //               improvementOpportunities: row.Improvement_Opportunities,
+  //               relatedQuestion: row.Related_Question,
+  //             };
 
-              if (!acc[domainTitleEN]) acc[domainTitleEN] = {};
-              if (!acc[domainTitleEN][sectionTitle]) acc[domainTitleEN][sectionTitle] = [];
-              acc[domainTitleEN][sectionTitle].push(criterion);
-              return acc;
-            }, {});
+  //             if (!acc[domainTitleEN]) acc[domainTitleEN] = {};
+  //             if (!acc[domainTitleEN][sectionTitle]) acc[domainTitleEN][sectionTitle] = [];
+  //             acc[domainTitleEN][sectionTitle].push(criterion);
+  //             return acc;
+  //           }, {});
 
-            newDomains.forEach((domain: Domain) => {
-              const fetchedCriteria = criteriaByDomain[domain.id];
-              if (fetchedCriteria) {
-                domain.sections = Object.keys(fetchedCriteria).map(sectionTitle => ({
-                  title: sectionTitle,
-                  criteria: fetchedCriteria[sectionTitle]
-                }));
-              }
-            });
-        }
+  //           newDomains.forEach((domain: Domain) => {
+  //             const fetchedCriteria = criteriaByDomain[domain.id];
+  //             if (fetchedCriteria) {
+  //               domain.sections = Object.keys(fetchedCriteria).map(sectionTitle => ({
+  //                 title: sectionTitle,
+  //                 criteria: fetchedCriteria[sectionTitle]
+  //               }));
+  //             }
+  //           });
+  //       }
         
-        // 3. Process Questions from each domain sheet for the assessment
-        const EXCLUDED_COLUMNS = ["تسلسل", "اسم المقيّم", "البريد الإلكتروني", "رقم الجوال"];
-        newDomains.forEach((domain: Domain) => {
-            const sheetData = data[domain.id];
-            if (sheetData && sheetData.length > 0) {
-                const questions = Object.keys(sheetData[0]).filter(key => !EXCLUDED_COLUMNS.includes(key));
-                domain.questions = questions.map(q => ({ text: q }));
-            }
-        });
+  //       // 3. Process Questions from each domain sheet for the assessment
+  //       const EXCLUDED_COLUMNS = ["تسلسل", "اسم المقيّم", "البريد الإلكتروني", "رقم الجوال"];
+  //       newDomains.forEach((domain: Domain) => {
+  //           const sheetData = data[domain.id];
+  //           if (sheetData && sheetData.length > 0) {
+  //               const questions = Object.keys(sheetData[0]).filter(key => !EXCLUDED_COLUMNS.includes(key));
+  //               domain.questions = questions.map(q => ({ text: q }));
+  //           }
+  //       });
         
-        setDomains(newDomains);
-      } catch (error) {
-        console.error("Error fetching initial data", error);
-      } finally {
-        setIsFetchingData(false);
-      }
-    };
-    fetchData();
-  }, []);
+  //       setDomains(newDomains);
+  //     } catch (error) {
+  //       console.error("Error fetching initial data", error);
+  //     } finally {
+  //       setIsFetchingData(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   const handleStart = () => {
     setCurrentStep('evaluator_info');
