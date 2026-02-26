@@ -9,6 +9,7 @@ interface DomainOverviewProps {
   onStart: () => void;
   onViewStats: () => void;
   onViewMaturityReport: () => void;
+  onViewAssessorsList: () => void;
 }
 
 const Icons = {
@@ -142,7 +143,7 @@ const SectionAccordion: React.FC<{ section: Section }> = ({ section }) => {
   );
 };
 
-const DomainOverview: React.FC<DomainOverviewProps> = ({ domains, onStart, onViewStats, onViewMaturityReport }) => {
+const DomainOverview: React.FC<DomainOverviewProps> = ({ domains, onStart, onViewStats, onViewMaturityReport, onViewAssessorsList }) => {
   const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
 
   useEffect(() => {
@@ -173,6 +174,7 @@ const DomainOverview: React.FC<DomainOverviewProps> = ({ domains, onStart, onVie
                 <button onClick={onStart} className="px-8 py-3.5 bg-[#E0B703] text-[#1D1D1B] font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(224,183,3,0.3)] hover:shadow-[0_0_30px_rgba(224,183,3,0.5)] hover:bg-[#F3D566] hover:-translate-y-1 transition-all duration-300 flex items-center gap-2"><span>ابدأ التقييم الآن</span><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg></button>
                 <button onClick={onViewStats} className="px-8 py-3.5 bg-white/10 text-white font-bold text-lg rounded-xl border border-white/20 hover:bg-white/20 backdrop-blur-md transition-all duration-300 flex items-center gap-2"><span>لوحة المؤشرات</span><svg className="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
                 <button onClick={onViewMaturityReport} className="px-8 py-3.5 bg-white/10 text-white font-bold text-lg rounded-xl border border-white/20 hover:bg-white/20 backdrop-blur-md transition-all duration-300 flex items-center gap-2"><span>تقرير النضج</span><svg className="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2m14-2v-2a4 4 0 00-4-4h-2a4 4 0 00-4 4v2m14-2h2m-2 2h2m-4-2v2m-6-4v-2a4 4 0 014-4h2a4 4 0 014 4v2" /></svg></button>
+                <button onClick={onViewAssessorsList} className="px-8 py-3.5 bg-white/10 text-white font-bold text-lg rounded-xl border border-white/20 hover:bg-white/20 backdrop-blur-md transition-all duration-300 flex items-center gap-2"><span>استعراض نتائج المقيمين</span><svg className="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg></button>
               </div>
            </div>
            <div className="flex-shrink-0 relative group">

@@ -12,8 +12,10 @@ import DomainOverview from './components/DomainOverview';
 import EvaluatorForm from './components/EvaluatorForm';
 import GlobalStats from './components/GlobalStats';
 import DigitalTransformationMaturity from './components/DigitalTransformationMaturity';
+import AssessorsList from './components/AssessorsList';
+import type { AssessorData } from './components/AssessorsList';
 
-type AppStep = 'overview' | 'evaluator_info' | 'assessment' | 'results' | 'global_stats' | 'digital_transformation_maturity';
+type AppStep = 'overview' | 'evaluator_info' | 'assessment' | 'results' | 'global_stats' | 'digital_transformation_maturity' | 'assessors_list' | 'assessor_report';
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoNykshIGwPVMNQqwqiBjjnwoyfD7C1Iy4558HSZUVix2Xl9cFMnHwP_Yu7TEOBwKa/exec";
 
@@ -29,6 +31,8 @@ const App: React.FC = () => {
   const [domains, setDomains] = useState<Domain[]>(ASSESSMENT_DOMAINS);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const [previousStep, setPreviousStep] = useState<AppStep>('overview');
+  const [assessorsData, setAssessorsData] = useState<AssessorData[]>([]);
+  const [selectedAssessorResults, setSelectedAssessorResults] = useState<Result[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -312,6 +316,91 @@ const App: React.FC = () => {
     setCurrentStep('digital_transformation_maturity');
     window.scrollTo(0, 0);
   };
+
+  const handleViewAssessorsList = async () => {
+    setPreviousStep(currentStep);
+    setIsLoadingStats(true); // Re-use loading indicator
+    setCurrentStep('assessors_list');
+    window.scrollTo(0, 0);
+
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL);
+      if (!response.ok) throw new Error("Network response was not ok");
+      const allData = await response.json();
+
+      const assessors: Record<string, Omit<AssessorData, 'results'> & { resultsMap: Record<string, Result> }> = {};
+      const scoreRegex = /\((\d)\)/;
+
+      domains.forEach(domain => {
+        const sheetData = allData[domain.id];
+        if (sheetData && Array.isArray(sheetData)) {
+          sheetData.forEach(row => {
+            const email = row['البريد الإلكتروني'];
+            if (!email) return;
+
+            if (!assessors[email]) {
+              assessors[email] = {
+                name: row['اسم المقيّم'],
+                email: email,
+                mobile: row['رقم الجوال'],
+                overallAverage: 0,
+                resultsMap: {},
+              };
+            }
+
+            let domainTotalScore = 0;
+            let domainQuestionCount = 0;
+
+            domain.questions.forEach(q => {
+              const answer = row[q.text];
+              if (typeof answer === 'string') {
+                const match = answer.match(scoreRegex);
+                if (match && match[1]) {
+                  const score = parseInt(match[1], 10);
+                  if (!isNaN(score)) {
+                    domainTotalScore += score;
+                    domainQuestionCount++;
+                  }
+                }
+              }
+            });
+
+            const domainAverage = domainQuestionCount > 0 ? domainTotalScore / domainQuestionCount : 0;
+            assessors[email].resultsMap[domain.id] = {
+              id: domain.id,
+              subject: domain.title,
+              score: domainAverage,
+              fullMark: 5,
+            };
+          });
+        }
+      });
+
+      const finalAssessorsData = Object.values(assessors).map(assessor => {
+        const results = Object.values(assessor.resultsMap);
+        const totalAverage = results.reduce((sum, r) => sum + r.score, 0) / (results.length || 1);
+        return {
+          ...assessor,
+          results: results,
+          overallAverage: totalAverage,
+        };
+      });
+
+      setAssessorsData(finalAssessorsData);
+
+    } catch (e) {
+      console.error("Could not fetch and process assessors data.", e);
+    } finally {
+      setIsLoadingStats(false);
+    }
+  };
+
+  const handleViewAssessorDetails = (assessor: AssessorData) => {
+    setPreviousStep(currentStep);
+    setSelectedAssessorResults(assessor.results);
+    setCurrentStep('assessor_report');
+    window.scrollTo(0, 0);
+  };
   
   const totalQuestions = useMemo(() => domains.reduce((acc, domain) => acc + domain.questions.length, 0), [domains]);
   const answeredQuestions = useMemo(() => Object.values(answers).reduce((acc: number, domainAnswers) => acc + Object.keys(domainAnswers).length, 0), [answers]);
@@ -374,6 +463,7 @@ const App: React.FC = () => {
              onStart={handleStart} 
              onViewStats={handleViewGlobalStats}
              onViewMaturityReport={handleViewMaturityReport}
+             onViewAssessorsList={handleViewAssessorsList}
           />
         )}
 
@@ -447,6 +537,32 @@ const App: React.FC = () => {
           </div>
         )}
 
+        {currentStep === 'assessors_list' && (
+          <AssessorsList 
+            assessors={assessorsData} 
+            onBack={() => { setCurrentStep('overview'); window.scrollTo(0, 0); }} 
+            onViewDetails={handleViewAssessorDetails}
+          />
+        )}
+
+        {currentStep === 'assessor_report' && (
+          <div className="space-y-6">
+            <div className="flex justify-start">
+              <button 
+                onClick={() => setCurrentStep('assessors_list')}
+                className="flex items-center gap-2 text-[#1D1D1B] font-bold hover:text-[#E0B703] transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 12H5m7 7l-7-7 7-7" /></svg>
+                العودة لقائمة المقيمين
+              </button>
+            </div>
+            <ResultsChart 
+              results={selectedAssessorResults} 
+              onReset={handleReset} 
+              onViewStats={handleViewGlobalStats}
+            />
+          </div>
+        )}
       </main>
       <Footer />
     </div>
